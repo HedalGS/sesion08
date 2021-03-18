@@ -1,0 +1,205 @@
+ <!DOCTYPE html>
+
+ Daniel Hernando Gil Cusi(6000428) - Concatenación de transformaciones
+<html>
+  <head>
+    <title>	Concatenación de transformaciones</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+      #info {
+          position: absolute;
+          padding: 10px;
+          width: 100%;
+          text-align: center;
+          color: #FFFFFF;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="js/three.min.js"></script>
+    <script>
+		var scene, aspect, camera, renderer;
+		var startTime = Date.now();
+
+		var cubo, cubo2, cubo3;
+		var t = new THREE.Matrix4();
+		var s = new THREE.Matrix4();
+
+
+		init();
+		animate();
+	
+		function init() {
+			//INICIALIZACIÓN DE LA ESCENA
+			scene = new THREE.Scene();
+			aspect = window.innerWidth / window.innerHeight;
+			camera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 1000);
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+			
+			//ELEMENTOS DE ESCENA
+			var size = 10;
+			var arrowSize = 10;
+			var divisions = size;
+			var origin = new THREE.Vector3( 0, 0, 0 );
+			var x = new THREE.Vector3( 1, 0, 0 );
+			var y = new THREE.Vector3( 0, 1, 0 );
+		  	var z = new THREE.Vector3( 0, 0, 1 );
+			var color1 = new THREE.Color( 0xD6D6D6 );
+		  	var color2 = new THREE.Color( 0x333333 );
+		  	var colorR = new THREE.Color( 0xAA3333 );
+		  	var colorG = new THREE.Color( 0x33AA33 );
+		  	var colorB = new THREE.Color( 0x333366 );
+			var colorRd = new THREE.Color( 0xAA6666 );
+		  	var colorGd = new THREE.Color( 0x66AA66 );
+		  	var colorBd = new THREE.Color( 0x6666AA );
+		  
+		  	//CREAR LAS GRILLAS PARA EL ESCENARIO
+		  	var axesHelper = new THREE.AxesHelper( size );
+		  	var gridHelperXY = new THREE.GridHelper( size, divisions, color1, color1);
+		  	var gridHelperXZ = new THREE.GridHelper( size, divisions, color1, color1 );
+		  	var gridHelperYZ = new THREE.GridHelper( size, divisions, color2, color2 );
+            
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXY.rotateOnWorldAxis ( x, THREE.Math.degToRad(90) );
+            gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+            gridHelperYZ.rotateOnWorldAxis ( z, THREE.Math.degToRad(90) );
+            
+            //CREAR LAS FLECHAS QUE INDICAN LOS EJES DE COORDENADAS 3D
+            var arrowX = new THREE.ArrowHelper( x, origin, arrowSize, colorR);
+            var arrowY = new THREE.ArrowHelper( y, origin, arrowSize, colorG);
+            var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB);
+
+			var vectorT = new THREE.Vector3(0,0,0);
+			var vectorS = new THREE.Vector3(1,1,1);
+			
+			//Llamado de los cubos
+			cubo = cubo(1); 
+
+
+			/*
+			PROFE, NO HE PODIDO MONTAR LA FUNCIÓN CORRECTAMENTE
+			*/
+			//cubo.transfTS(vectorT, vectorS); 
+
+		  	//AGREGAR A LA ESCENA
+            scene.add( gridHelperXZ );
+		  	scene.add( arrowX );	
+		  	scene.add( arrowY );	
+		  	scene.add( arrowZ );	
+			scene.add( cubo );
+			
+			//MOVER LA CÁMARA
+			camera.position.x = 5;
+			camera.position.y = 3;	 
+		  	camera.position.z =  2;			
+		  	camera.lookAt( origin );
+			}
+    
+
+	function transfTS(vectorT, vectorS){
+		
+			//Factores de transformación
+			var tx=0, ty=0, tz=0;
+			var sx = 1, sy = 1, sz = 1;
+
+			/*tx = vectorT[0];
+			ty = vectorT[1];
+			tz = vectorT[2];
+
+			sx = vectorS[0];
+			sy = vectorS[1];
+			sz = vectorS[2];
+		*/
+			matrizTS = new THREE.Matrix4();
+
+			//Matriz Traslación
+			t.set( 	1, 0, 0, tx,
+					0, 1, 0, ty, 
+					0, 0, 1, tz,
+					0, 0, 0, 1	);
+
+			//Matriz Escalado
+			s.set( 	sx, 0, 0, 0,
+					0, sy, 0, 0, 
+					0, 0, sz, 0,
+					0, 0, 0,  1	);
+
+			
+			matrizTS.set( 	sx, 0, 0, sx*tx,
+							0, sy, 0, sy*ty, 
+							0, 0, sz, sz*tz,
+							0, 0, 0,  1	);
+
+
+		//APLICAR CAMBIOS DE LAS MATRICES
+		objeto.applyMatrix(t);				//Aplicar la matriz de transformación al objeto				
+		objeto.elementsNeedUpdate = true;	//Avisar que la matriz del objeto ha cambiado
+
+	}
+
+	function cubo(l){
+
+//El largo de las aristas del cubo
+var lado = l;
+
+//Fragmento de código modificado a partir del libro Learning Three.js The JavaScript 3D Library for WebGL Kindle Edition by Jos Dirksen - 2013
+//Para la realización de geometrías únicas
+var vertices = [
+  new THREE.Vector3(l/2,l,l/2), //1
+  new THREE.Vector3(l/2,l,-l/2), //2
+  new THREE.Vector3(l/2,0,l/2),  //3
+  new THREE.Vector3(l/2,0,-l/2),//4
+  new THREE.Vector3(-l/2,l,-l/2), //5 
+  new THREE.Vector3(-l/2,l,l/2), //6
+  new THREE.Vector3(-l/2,0,-l/2), //7
+  new THREE.Vector3(-l/2,0,l/2) //8
+  ];
+
+var faces = [
+  new THREE.Face3(0,2,1),
+  new THREE.Face3(2,3,1),
+  new THREE.Face3(4,6,5),
+  new THREE.Face3(6,7,5),
+  new THREE.Face3(4,5,1),
+  new THREE.Face3(5,0,1),
+  new THREE.Face3(7,6,2),
+  new THREE.Face3(6,3,2),
+  new THREE.Face3(5,7,0),
+  new THREE.Face3(7,2,0),
+  new THREE.Face3(1,3,4),
+  new THREE.Face3(3,6,4),
+  ];
+
+//La geometría del cubo
+var geoCubo = new THREE.Geometry();
+//El material para el cubo
+var materialCubo = new THREE.MeshBasicMaterial({color: 0xBAFA89, vertexColors: THREE.FaceColors});
+
+//Se asignan los vertices y las cáras de la geometría
+geoCubo.vertices = vertices;
+geoCubo.faces = faces;
+
+//Se crea el mesh que contiene la gemetría y el material del cubo
+var cuboFigura = new THREE.Mesh(geoCubo,materialCubo);
+
+//Se realiza el retorno del mesh
+return cuboFigura;
+}
+    
+	function animate() {
+        render();
+        requestAnimationFrame( animate );
+    }
+    
+    function render(){
+        var dtime = Date.now()-startTime;
+		
+
+        camera.lookAt( 0, 0, 0 );
+        renderer.render( scene, camera );
+    }
+    </script>
+  </body>
+</html>

@@ -21,7 +21,7 @@
 		var scene, aspect, camera, renderer;
 		var startTime = Date.now();
 
-		var object, object2, object3;
+		var cubo, cubo2, cubo3;
 		var t = new THREE.Matrix4();
 		var s = new THREE.Matrix4();
 
@@ -70,21 +70,25 @@
             var arrowX = new THREE.ArrowHelper( x, origin, arrowSize, colorR);
             var arrowY = new THREE.ArrowHelper( y, origin, arrowSize, colorG);
             var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB);
+
+			var vectorT = new THREE.Vector3(0,0,0);
+			var vectorS = new THREE.Vector3(1,1,1);
 			
 			//Llamado de los cubos
-			object = cubo(1); 
-			object2 = cubo(1);
-			object3 = cubo(1);
+			cubo = cubo(1); 
 
 
-
+			/*
+			PROFE, NO HE PODIDO MONTAR LA FUNCIÓN CORRECTAMENTE
+			*/
+			//cubo.transfTS(vectorT, vectorS); 
 
 		  	//AGREGAR A LA ESCENA
             scene.add( gridHelperXZ );
 		  	scene.add( arrowX );	
 		  	scene.add( arrowY );	
 		  	scene.add( arrowZ );	
-			scene.add( object );
+			scene.add( cubo );
 			
 			//MOVER LA CÁMARA
 			camera.position.x = 5;
@@ -94,13 +98,22 @@
 			}
     
 
-	function transfTS(objeto, matriz1, matriz2){
+	function transfTS(vectorT, vectorS){
 		
 			//Factores de transformación
 			var tx=0, ty=0, tz=0;
 			var sx = 1, sy = 1, sz = 1;
-		
-		
+
+			/*tx = vectorT[0];
+			ty = vectorT[1];
+			tz = vectorT[2];
+
+			sx = vectorS[0];
+			sy = vectorS[1];
+			sz = vectorS[2];
+		*/
+			matrizTS = new THREE.Matrix4();
+
 			//Matriz Traslación
 			t.set( 	1, 0, 0, tx,
 					0, 1, 0, ty, 
@@ -112,11 +125,17 @@
 					0, sy, 0, 0, 
 					0, 0, sz, 0,
 					0, 0, 0,  1	);
-				
-		
+
+			
+			matrizTS.set( 	sx, 0, 0, sx*tx,
+							0, sy, 0, sy*ty, 
+							0, 0, sz, sz*tz,
+							0, 0, 0,  1	);
+
+
 		//APLICAR CAMBIOS DE LAS MATRICES
-		/*object.applyMatrix(t);				//Aplicar la matriz de transformación al objeto				
-		object.elementsNeedUpdate = true;	//Avisar que la matriz del objeto ha cambiado*/
+		objeto.applyMatrix(t);				//Aplicar la matriz de transformación al objeto				
+		objeto.elementsNeedUpdate = true;	//Avisar que la matriz del objeto ha cambiado
 
 	}
 
